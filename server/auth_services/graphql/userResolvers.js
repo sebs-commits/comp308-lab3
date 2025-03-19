@@ -56,6 +56,15 @@ const resolvers = {
       await newUser.save();
       return true;
     },
+    logout: (_, __, { res }) => {
+      // Clear the token cookie
+      res.cookie('token', '', {
+        httpOnly: true,
+        expires: new Date(0), // Set to expire right away
+        maxAge: 0
+      });
+      return true;
+    },
   },
 };
 

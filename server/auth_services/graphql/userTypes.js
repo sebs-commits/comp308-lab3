@@ -9,6 +9,7 @@ const userTypes = `#graphql
   type Mutation {
     login(username: String!, password: String!): Boolean
     register(username: String!, password: String!): Boolean
+    logout: Boolean
   }
 `;
 
