@@ -8,6 +8,7 @@ const userTypes = require("./graphql/userTypes");
 const userResolvers = require("./graphql/userResolvers");
 const cookieParser = require("cookie-parser");
 const { expressMiddleware } = require("@apollo/server/express4");
+const { connectDb } = require("./config/db");
 // const { GraphQLSchema, GraphQLObjectType, GraphQLString } = require("graphql");
 // const { ApolloServer } = require("@apollo/server");
 // const { startStandaloneServer } = require("@apollo/server/standalone");
@@ -21,15 +22,9 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 // Connect to mongodb
-mongoose
-  .connect(process.env.MONGODB_AUTH_URI)
-  .then(() => {
-    console.log("Connected to MongoDB auth service");
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-  });
+connectDb();
 
 const server = new ApolloServer({
   typeDefs: userTypes,
