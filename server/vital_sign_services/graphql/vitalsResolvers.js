@@ -3,7 +3,8 @@ const vitals = require("../models/Vitals");
 const resolvers = {
   Query: {
     // Get all vitals
-    getAllVitals: async () => {
+    getAllVitals: async (_, __, { user }) => {
+      if (!user) throw new Error("You must be logged in");
       try {
         return await vitals.find();
       } catch (error) {
@@ -12,7 +13,8 @@ const resolvers = {
     },
 
     // Get vitals by patient ID
-    getVitalsByPatientId: async (_, { patientId }) => {
+    getVitalsByPatientId: async (_, { patientId }, { user }) => {
+      if (!user) throw new Error("You must be logged in");
       try {
         return await vitals.find({ patientId });
       } catch (error) {
@@ -25,8 +27,10 @@ const resolvers = {
     // Add new vitals
     addVitals: async (
       _,
-      { patientId, bodyTemperature, heartRate, respirationRate, bloodPressure }
+      { patientId, bodyTemperature, heartRate, respirationRate, bloodPressure },
+      { user }
     ) => {
+      if (!user) throw new Error("You must be logged in");
       try {
         const newVitals = new vitals({
           patientId,
@@ -44,8 +48,10 @@ const resolvers = {
     // Update vitals
     updateVitals: async (
       _,
-      { id, bodyTemperature, heartRate, respirationRate, bloodPressure }
+      { id, bodyTemperature, heartRate, respirationRate, bloodPressure },
+      { user }
     ) => {
+      if (!user) throw new Error("You must be logged in");
       try {
         return await vitals.findByIdAndUpdate(
           id,
