@@ -15,16 +15,17 @@ const { connectDb } = require("./config/db");
 
 const app = express();
 
-app.use(cors({
-  origin: ['http://localhost:4001', 'https://studio.apollographql.com'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:4001", "https://studio.apollographql.com"],
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Connect to mongodb
-connectDb();
 
 const server = new ApolloServer({
   typeDefs: userTypes,
@@ -32,21 +33,30 @@ const server = new ApolloServer({
   context: ({ req, res }) => ({ req, res }),
 });
 
-(async function () {
+const startServer = async () => {
+  // Connect to mongodb
+  await connectDb();
+  const server = new ApolloServer({
+    typeDefs: userTypes,
+    resolvers: userResolvers,
+    context: ({ req, res }) => ({ req, res }),
+  });
   await server.start();
+
   app.use(
     "/graphql",
     expressMiddleware(server, {
       context: async ({ req, res }) => ({ req, res }),
       cors: {
-        origin: ['http://localhost:4001', 'https://studio.apollographql.com'],
-        credentials: true
-      }
+        origin: ["http://localhost:4001", "https://studio.apollographql.com"],
+        credentials: true,
+      },
     })
   );
-
   const PORT = process.env.AUTH_SERVICE_PORT || 4001;
   app.listen(PORT, () => {
     console.log(`Auth service running at http://localhost:${PORT}/graphql`);
   });
-})();
+};
+
+startServer();
