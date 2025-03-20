@@ -9,9 +9,6 @@ const userResolvers = require("./graphql/userResolvers");
 const cookieParser = require("cookie-parser");
 const { expressMiddleware } = require("@apollo/server/express4");
 const { connectDb } = require("./config/db");
-// const { GraphQLSchema, GraphQLObjectType, GraphQLString } = require("graphql");
-// const { ApolloServer } = require("@apollo/server");
-// const { startStandaloneServer } = require("@apollo/server/standalone");
 
 const app = express();
 
@@ -25,13 +22,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Connect to mongodb
-
-const server = new ApolloServer({
-  typeDefs: userTypes,
-  resolvers: userResolvers,
-  context: ({ req, res }) => ({ req, res }),
-});
 
 const startServer = async () => {
   // Connect to mongodb
@@ -53,6 +43,7 @@ const startServer = async () => {
       },
     })
   );
+  
   const PORT = process.env.AUTH_SERVICE_PORT || 4001;
   app.listen(PORT, () => {
     console.log(`Auth service running at http://localhost:${PORT}/graphql`);
