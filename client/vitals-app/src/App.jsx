@@ -22,11 +22,11 @@ const client = new ApolloClient({
   },
 });
 
-function App() {
+function App({ onLogout }) {
   return (
     <div className="App">
       <ApolloProvider client={client}>
-        <VitalsComponent />
+        <VitalsComponent onLogout={onLogout} />
       </ApolloProvider>
     </div>
   );

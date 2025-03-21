@@ -1,6 +1,6 @@
 // shell-app/src/App.jsx
 import React, { useState, useEffect, lazy, Suspense } from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import "./App.css";
 
 const AuthApp = lazy(() => import("authApp/App"));
@@ -14,6 +14,13 @@ const CURRENT_USER_QUERY = gql`
     }
   }
 `;
+
+const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -22,6 +29,15 @@ function App() {
     onError: (error) => {
       console.error("Authentication error:", error);
       setIsLoggedIn(false);
+    }
+  });
+
+  const [logout] = useMutation(LOGOUT_MUTATION, {
+    onCompleted: () => {
+      setIsLoggedIn(false);
+    },
+    onError: (error) => {
+      console.error("Logout error:", error);
     }
   });
 
@@ -53,7 +69,7 @@ function App() {
   return (
     <div className="App">
       <Suspense fallback={<div>Loading application...</div>}>
-        {!isLoggedIn ? <AuthApp /> : <VitalsApp />}
+        {!isLoggedIn ? <AuthApp /> : <VitalsApp onLogout={() => logout()} />}
       </Suspense>
     </div>
   );

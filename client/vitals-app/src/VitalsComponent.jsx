@@ -41,13 +41,7 @@ const ADD_VITALS = gql`
   }
 `;
 
-const LOGOUT_MUTATION = gql`
-  mutation Logout {
-    logout
-  }
-`;
-
-function VitalsComponent() {
+function VitalsComponent({ onLogout }) {
   // State for form inputs
   const [patientId, setPatientId] = useState("");
   const [bodyTemperature, setBodyTemperature] = useState("");
@@ -79,19 +73,8 @@ function VitalsComponent() {
     },
   });
 
-  // Add logout mutation
-  const [logout] = useMutation(LOGOUT_MUTATION, {
-    onCompleted: () => {
-      // Dispatch custom event to notify shell app
-      window.dispatchEvent(new CustomEvent("logout"));
-    },
-    onError: (error) => {
-      setError(`Error logging out: ${error.message}`);
-    }
-  });
-
   const handleLogout = () => {
-    logout();
+    onLogout();
   };
 
   const handleSubmit = (e) => {
