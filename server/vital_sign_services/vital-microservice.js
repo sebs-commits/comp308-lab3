@@ -19,9 +19,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }));
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // Add a pre-flight route handler
 app.options('/graphql', cors());
@@ -37,7 +37,7 @@ const startServer = async () => {
       const token = req.cookies["token"];
       if (token) {
         try {
-          const user = jwt.verify(token, process.env.JWT_SECRET);
+          const user = jwt.verify(token, "your_secret_key");
           return { user };
         } catch (e) {
           throw new Error("Your session expired. Sign in again.");
@@ -48,11 +48,24 @@ const startServer = async () => {
   });
   await server.start();
 
-  app.use("/graphql", expressMiddleware(server));
+  app.use("/graphql", expressMiddleware(server, {
+    context: async ({ req }) => {
+      const token = req.cookies["token"];
+      if (token) {
+        try {
+          const user = jwt.verify(token, "your_secret_key");
+          return { user };
+        } catch (e) {
+          throw new Error("Your session expired. Sign in again.");
+        }
+      }
+      return { user: null };
+    },
+  }));
 
   const PORT = process.env.VITAL_SERVICE_PORT || 4002;
   app.listen(PORT, () => {
-    console.log(`Auth service running at http://localhost:${PORT}/graphql`);
+    console.log(`Vitals service running at http://localhost:${PORT}/graphql`);
   });
 }
 

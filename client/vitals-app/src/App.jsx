@@ -6,10 +6,6 @@ import VitalsComponent from "./VitalsComponent";
 const httpLink = createHttpLink({
   uri: "http://localhost:4002/graphql",
   credentials: 'include',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  }
 });
 
 const client = new ApolloClient({
