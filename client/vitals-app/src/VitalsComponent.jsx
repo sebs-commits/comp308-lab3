@@ -41,6 +41,12 @@ const ADD_VITALS = gql`
   }
 `;
 
+const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
 function VitalsComponent() {
   // State for form inputs
   const [patientId, setPatientId] = useState("");
@@ -73,6 +79,21 @@ function VitalsComponent() {
     },
   });
 
+  // Add logout mutation
+  const [logout] = useMutation(LOGOUT_MUTATION, {
+    onCompleted: () => {
+      // Dispatch custom event to notify shell app
+      window.dispatchEvent(new CustomEvent("logout"));
+    },
+    onError: (error) => {
+      setError(`Error logging out: ${error.message}`);
+    }
+  });
+
+  const handleLogout = () => {
+    logout();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -94,97 +115,112 @@ function VitalsComponent() {
     addVitals({ variables: vitalsData });
   };
 
-  if (loading) return <div>Loading vitals data...</div>;
+  if (loading) return <div className="flex justify-center p-4">Loading vitals data...</div>;
 
   return (
-    <div>
-      <h2>Patient Vitals Management</h2>
+    <div className="p-4 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Patient Vitals Management</h2>
+        <button onClick={handleLogout} className="btn btn-sm btn-outline">Logout</button>
+      </div>
       
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="alert alert-error mb-4">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="patientId">Patient ID:</label>
-          <input
-            type="text"
-            id="patientId"
-            value={patientId}
-            onChange={(e) => setPatientId(e.target.value)}
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="bodyTemperature">Body Temperature:</label>
-          <input
-            type="number"
-            id="bodyTemperature"
-            step="0.1"
-            value={bodyTemperature}
-            onChange={(e) => setBodyTemperature(e.target.value)}
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="heartRate">Heart Rate:</label>
-          <input
-            type="number"
-            id="heartRate"
-            value={heartRate}
-            onChange={(e) => setHeartRate(e.target.value)}
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="respirationRate">Respiration Rate:</label>
-          <input
-            type="number"
-            id="respirationRate"
-            value={respirationRate}
-            onChange={(e) => setRespirationRate(e.target.value)}
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="bloodPressure">Blood Pressure:</label>
-          <input
-            type="number"
-            id="bloodPressure"
-            value={bloodPressure}
-            onChange={(e) => setBloodPressure(e.target.value)}
-          />
-        </div>
-        
-        <button type="submit">Add Vitals</button>
-      </form>
+      <div className="bg-base-200 border border-base-300 p-4 rounded-box mb-6">
+        <h3 className="font-semibold mb-2">Add New Vitals</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="patientId" className="block mb-1">Patient ID:</label>
+              <input
+                type="text"
+                id="patientId"
+                value={patientId}
+                onChange={(e) => setPatientId(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="bodyTemperature" className="block mb-1">Body Temperature:</label>
+              <input
+                type="number"
+                id="bodyTemperature"
+                step="0.1"
+                value={bodyTemperature}
+                onChange={(e) => setBodyTemperature(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="heartRate" className="block mb-1">Heart Rate:</label>
+              <input
+                type="number"
+                id="heartRate"
+                value={heartRate}
+                onChange={(e) => setHeartRate(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="respirationRate" className="block mb-1">Respiration Rate:</label>
+              <input
+                type="number"
+                id="respirationRate"
+                value={respirationRate}
+                onChange={(e) => setRespirationRate(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="bloodPressure" className="block mb-1">Blood Pressure:</label>
+              <input
+                type="number"
+                id="bloodPressure"
+                value={bloodPressure}
+                onChange={(e) => setBloodPressure(e.target.value)}
+                className="input input-bordered w-full"
+              />
+            </div>
+          </div>
+          
+          <button type="submit" className="btn btn-neutral">Add Vitals</button>
+        </form>
+      </div>
 
-      <h3>Vitals Records</h3>
-      <div>
-        {data?.getAllVitals?.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Patient ID</th>
-                <th>Body Temp</th>
-                <th>Heart Rate</th>
-                <th>Respiration Rate</th>
-                <th>Blood Pressure</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.getAllVitals.map((vital) => (
-                <tr key={vital.id}>
-                  <td>{vital.patientId}</td>
-                  <td>{vital.bodyTemperature}</td>
-                  <td>{vital.heartRate}</td>
-                  <td>{vital.respirationRate}</td>
-                  <td>{vital.bloodPressure}</td>
+      <div className="bg-base-200 border border-base-300 p-4 rounded-box">
+        <h3 className="font-semibold mb-2">Vitals Records</h3>
+        <div className="overflow-x-auto">
+          {data?.getAllVitals?.length > 0 ? (
+            <table className="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Body Temp</th>
+                  <th>Heart Rate</th>
+                  <th>Respiration Rate</th>
+                  <th>Blood Pressure</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No vitals records found.</p>
-        )}
+              </thead>
+              <tbody>
+                {data.getAllVitals.map((vital) => (
+                  <tr key={vital.id}>
+                    <td>{vital.patientId}</td>
+                    <td>{vital.bodyTemperature}</td>
+                    <td>{vital.heartRate}</td>
+                    <td>{vital.respirationRate}</td>
+                    <td>{vital.bloodPressure}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-center py-4">No vitals records found.</p>
+          )}
+        </div>
       </div>
     </div>
   );

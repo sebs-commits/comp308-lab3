@@ -2,7 +2,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import federation from "@originjs/vite-plugin-federation";
-//
+import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   server: {
     port: 3002, // Specify the port to avoid conflicts
@@ -17,6 +17,7 @@ export default defineConfig({
       },
       shared: ["react", "react-dom", "@apollo/client", "graphql"],
     }),
+    tailwindcss(),
   ],
   build: {
     modulePreload: false,

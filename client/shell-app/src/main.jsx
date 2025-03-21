@@ -1,37 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  ApolloProvider,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import "./index.css";
 
 // Set up the Apollo Client
-const httpLink = createHttpLink({
-  uri: "http://localhost:4001/graphql", // Adjust to your auth-microservice GraphQL endpoint
-  credentials: "include", // Important for handling cookies properly
-  headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json"
-  }
-});
 
 const client = new ApolloClient({
-  link: httpLink,
+  uri: "http://localhost:4001/graphql",
+  credentials: "include",
   cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'network-only',
-      errorPolicy: 'ignore',
-    },
-    query: {
-      fetchPolicy: 'network-only',
-      errorPolicy: 'all',
-    },
-  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
