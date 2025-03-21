@@ -1,7 +1,7 @@
 // user-app/src/UserComponent.jsx
 import React, { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
-
+import "./index.css";
 // GraphQL mutations
 const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {
