@@ -14,7 +14,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:4001", "https://studio.apollographql.com"],
+    origin: true,
     credentials: true,
   })
 );
@@ -37,10 +37,6 @@ const startServer = async () => {
     "/graphql",
     expressMiddleware(server, {
       context: async ({ req, res }) => ({ req, res }),
-      cors: {
-        origin: ["http://localhost:4001", "https://studio.apollographql.com"],
-        credentials: true,
-      },
     })
   );
   
