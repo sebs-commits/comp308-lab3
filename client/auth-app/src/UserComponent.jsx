@@ -65,49 +65,69 @@ function UserComponent() {
   };
 
   return (
-    <div>
-      <div>
-        <button
-          onClick={() => setActiveTab("login")}
-          disabled={isSubmitting}
-        >
-          Login
-        </button>
-        <button
-          onClick={() => setActiveTab("register")}
-          disabled={isSubmitting}
-        >
-          Register
-        </button>
+    <div className="flex justify-center items-center p-4">
+      <div className="w-full max-w-sm">
+        <div className="tabs tabs-boxed mb-4">
+          <button
+            className={`tab ${activeTab === "login" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("login")}
+            disabled={isSubmitting}
+          >
+            Login
+          </button>
+          <button
+            className={`tab ${activeTab === "register" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("register")}
+            disabled={isSubmitting}
+          >
+            Register
+          </button>
+        </div>
+
+        <fieldset className="fieldset w-xs bg-base-200 border border-base-300 p-4 rounded-box">
+          <legend className="fieldset-legend">
+            {activeTab === "login" ? "Login" : "Register"}
+          </legend>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {authError && (
+              <div className="alert alert-error">{authError}</div>
+            )}
+            
+            <div>
+              <label className="fieldset-label">Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+                disabled={isSubmitting}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <div>
+              <label className="fieldset-label">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                disabled={isSubmitting}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="btn btn-neutral w-full"
+            >
+              {isSubmitting ? "Processing..." : activeTab === "login" ? "Login" : "Register"}
+            </button>
+          </form>
+        </fieldset>
       </div>
-
-      <form onSubmit={handleSubmit}>
-        {authError && <div>{authError}</div>}
-        
-        <div>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
-            disabled={isSubmitting}
-          />
-        </div>
-
-        <div>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            disabled={isSubmitting}
-          />
-        </div>
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Processing..." : activeTab === "login" ? "Login" : "Register"}
-        </button>
-      </form>
     </div>
   );
 }
